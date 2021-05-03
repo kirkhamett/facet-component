@@ -186,7 +186,7 @@ export class FacetComponent implements OnInit {
   /**
    * actual search filter and traverses through the whole tree
    * note: most (if not all) actions involving tree manipulation should 
-   * traverse this.data to maximize 2-way binding
+   * traverse this.data to maximize the framework
    * 
    * @param kw: string
    * @param node: TreeNode
