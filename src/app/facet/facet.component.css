@@ -1,0 +1,24 @@
+ul {
+    display: flex;
+    flex-direction: column;
+}
+
+.hide {
+    display: none;
+}
+
+li {
+    list-style-type: none;
+    font-size: 12x;    
+}
+
+.selectedFacet {
+    color: #00f;
+}
+
+a.linkToggle {
+    color: #00f;
+    cursor: pointer;
+    font-size: 10px;
+    text-decoration: underline;
+}

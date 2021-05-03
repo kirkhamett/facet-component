@@ -1,0 +1,38 @@
+<p>Selected Facet(s) <span *ngIf="selectedFacetNames?.length > 0">[{{ selectedFacetNames?.length }}]</span>: <span class='selectedFacet'>{{ selectedFacetNames.toString() }}</span></p>
+<input type='button' value='Refresh List' (click)="refreshList()" />
+<input *ngIf='selectedFacetNames.length' type='button' title='soft delete only' value='Delete Selected' (click)="removeFacets()" />  
+<input *ngIf='selectedFacetNames.length' type='button' value='Clear Selection' (click)="uncheckAll()" />
+<!-- Define the recursive template. -->
+<ng-template #ngTemplate let-node>
+	<li #nodeList class="node" id='{{  node.id }}'>
+		<a *ngIf='node.id' (change)="selectNode(node)" class="">
+            <input #checkboxes name='checkboxes[]' class="form-control" type='checkbox' 
+			[(ngModel)]="node.isChecked" value='node_{{ node.id }}' 
+			(ngModelChange)="toggleCheckbox($event, node)">
+			<span class='name'>{{ node.name }}</span>
+		</a>
+
+        <a class='linkToggle' *ngIf='node.id && node?.children' (click)="toggle($event, node)">   
+            [toggle children]         
+		</a>    
+
+		<div *ngIf="node?.children" [hidden]="node.isClosed">
+			<ul id="childrenof_{{ node.id }}" [ngClass]="">	
+				<ng-template
+					ngFor
+					[ngForOf]="node.children"
+					[ngForTemplate]="ngTemplate">
+					
+				</ng-template>
+	
+			</ul>
+		</div>
+ 
+	</li>
+ 
+</ng-template>
+ 
+<ng-template
+	[ngTemplateOutlet]="ngTemplate"
+	[ngTemplateOutletContext]="{ $implicit: data.root }">
+</ng-template>

@@ -1,0 +1,17 @@
+ul {
+    display: none;
+    flex-direction: column;
+}
+
+ul.show {
+    display: flex;
+}
+
+li {
+    list-style-type: none;
+}
+
+.toggleCaption {
+    font-size: 10px;
+    color: #00f;
+}
