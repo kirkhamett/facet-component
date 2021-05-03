@@ -12,6 +12,8 @@ interface TreeNode {
   parent_id ?: any;
 	name: string;
   isChecked ?: boolean,
+  isVisible ?: boolean,
+  isClosed ?: boolean,
 	children: TreeNode[];
 }
 
@@ -23,64 +25,89 @@ interface TreeNode {
 
 export class FacetComponent implements OnInit {
 
-  public title : string = 'Facets';
-  public facets  = [];
-
-  public data: Tree;
-	public selectedTreeNode: TreeNode | null;
-  public selectedFacetIds= [];
-  public selectedFacetNames = [];
-  public showChild: boolean = false;
+  /**
+   * component settings
+   */
+  public options = { 
+    title: 'Facets',
+    btnResetText: 'Refresh',
+    btnDeleteText: 'Delete',
+    btnClearText: 'Clear',
+    searchLabel: 'Search',
+    searchPlaceholder: 'E.g. Riemen'
+  };
   
+  /**
+   * main data object
+   */
+  public data: Tree;
+
+  /**
+   * array to collect ids of selected categories
+   */
+	public selectedFacetIds = [];
+
+  /**
+   * array to collect names of selected categories 
+   */
+  public selectedFacetNames = [];
+
+  /**
+   * array to collect names of selected categories 
+   */
+  public searchText: string = '';
   
   @ViewChildren("checkboxes") checkboxes: QueryList<ElementRef>;
   @ViewChildren("nodeList") nodeList: QueryList<ElementRef>;
 
+  /**
+   * class constructor
+   */
   constructor(private facetService: FacetService, 
     private facetObserverService: FacetObserverService) { 
 
-    this.selectedTreeNode = null;
-		
+    // set default
     this.data = {
-			root: {
-				name: "first",
-				children: []
-			}
-		}
+      root: {
+        name: "first",
+        children: []
+      }
+    }
   }
 
-  ngOnInit(): void {
+  /**
+   * on init, call refresh list to fetch data from server 
+   * @return void
+   */
+  ngOnInit() : void {
     this.refreshList();
   }
 
-  refreshList(): void {
-    this.getAll();
-  }
-
-  getAll(): void {
+  /**
+   * this makes the actual call to the backend
+   * * @return void
+   */
+  refreshList() : void {
     this.facetService.getAll()
       .subscribe(
         data => {
-          this.data = data.main;                        
+          this.data = data.main;  
+          this.options = data.options;                      
         },
         error => {
-          console.log(error);
+          //console.log(error);
         });
   }
 
-	selectNode( node: TreeNode ) : void {
- 
-		this.selectedTreeNode = node;
- 
-		/* console.group( "Selected Tree Node" );
-		console.log( "name:", node.name );
-		console.log( "Children:", node?.children?.length );
-		console.groupEnd(); */
- 
-	}
-
-  toggleCheckbox( evt: any, node: any ) : void {    
-
+  /**
+   * toggle the current checkbox and all descendants
+   * note: another way to do this is to traverse the main list -> this.data
+   * this implementation was done to present another way of doing this action
+   * @param evt : any
+   * @param node: TreeNode
+   * @return void
+   */
+  toggleCheckbox( evt: any, node: TreeNode ) : void {    
     if(node.isChecked) {
       if (this.selectedFacetIds.indexOf(node.id) === -1) {
         // add selection to selected list
@@ -98,41 +125,40 @@ export class FacetComponent implements OnInit {
       }
     }
 
-    
+    // check children 
     if (node.children?.length) {
       for (var i = 0; i < node.children.length; i++) {
         // check children/descendant checkboxes
         node.children[i].isChecked = node.isChecked;
         // add/remove descendant to selected
-        this.toggleCheckbox(evt, node.children[i]);
-        
+        this.toggleCheckbox(evt, node.children[i]);        
       }
     }
-
   }
 
-  parentCheck( evt: any, node : any ) : void {
-    console.log('parentCheck');
-    console.log(node.children.length);
-    /* if (node.children?.length) {
-      
-      for (var i = 0; i < node.children.length; i++) {
-        node.children[i].isChecked = node.isChecked;
-      }
-    } */
-  }
-
+  /**
+   * 'remove selected' button action
+   * soft removes the selected (checked) items from the tree
+   * note: another way to do this is to traverse the main list -> this.data
+   * this implementation was done to present another way of doing this action
+   * @todo loop the list instead of the elements
+   * @return void
+   */
   removeFacets() : void {
-    console.log(this.selectedFacetIds);
     this.nodeList.forEach((element) => {         
       if (this.selectedFacetIds.indexOf(element.nativeElement.id) > -1) {
-        console.log(element.nativeElement.id);   
+        // hide (soft delete)
         element.nativeElement.className = 'hide';
       }
     });
     this.uncheckAll();
   }
 
+  /**
+   * reset all visible/remaining items in the list 
+   * this is called after delete action
+   * @return void
+   */
   uncheckAll() : void {
     this.selectedFacetIds = [];
     this.selectedFacetNames = [];
@@ -141,8 +167,47 @@ export class FacetComponent implements OnInit {
     });
   }
 
+  /**
+   * toggles (show/hide) child node from view
+   * @return void
+   */
   toggle( evt: any, node: any ) {
     node.isClosed = !node.isClosed;
+  }
+
+  /**
+   * search as you type filter
+   * @return void
+   */
+  doSearch()  : void {    
+    this.searchFilter(this.data.root);      
+  }
+
+  /**
+   * actual search filter and traverses through the whole tree
+   * note: most (if not all) actions involving tree manipulation should 
+   * traverse this.data to maximize 2-way binding
+   * 
+   * @param kw: string
+   * @param node: TreeNode
+   * @return void 
+   */
+  searchFilter( node: TreeNode) : void {    
+    let needle = this.searchText.toLowerCase();
+    let haystack = node.name.toLowerCase();
+    
+    if (haystack.indexOf(needle) === -1) {
+      node.isVisible = false;      
+    } 
+    else {
+      node.isVisible = true;      
+    }
+
+    if (node?.children?.length) {
+      node.children.forEach((child) => { 
+        this.searchFilter(child);
+      });        
+    }
   }
 
 }

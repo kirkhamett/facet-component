@@ -1,20 +1,30 @@
+<h2 *ngIf="options.title">{{ options.title }}</h2>
 <p>Selected Facet(s) <span *ngIf="selectedFacetNames?.length > 0">[{{ selectedFacetNames?.length }}]</span>: <span class='selectedFacet'>{{ selectedFacetNames.toString() }}</span></p>
-<input type='button' value='Refresh List' (click)="refreshList()" />
-<input *ngIf='selectedFacetNames.length' type='button' title='soft delete only' value='Delete Selected' (click)="removeFacets()" />  
-<input *ngIf='selectedFacetNames.length' type='button' value='Clear Selection' (click)="uncheckAll()" />
+<div class='button-container'>
+	<input type='button' value='{{ options.btnResetText }}' (click)="refreshList()" />
+	<input *ngIf='selectedFacetNames.length' type='button' title='soft delete only' value='{{ options.btnDeleteText }}' (click)="removeFacets()" />
+	<input *ngIf='selectedFacetNames.length' type='button' value='{{ options.btnClearText }}' (click)="uncheckAll()" />
+</div>
+<div class="form-group">
+	<label for="search-text">{{ options.searchLabel }}</label>
+	<input class="form-control" id="search" placeholder="{{ options.searchPlaceholder }}" 
+		[(ngModel)]="searchText" (ngModelChange)="doSearch()" />
+</div>
 <!-- Define the recursive template. -->
 <ng-template #ngTemplate let-node>
-	<li #nodeList class="node" id='{{  node.id }}'>
-		<a *ngIf='node.id' (change)="selectNode(node)" class="">
-            <input #checkboxes name='checkboxes[]' class="form-control" type='checkbox' 
-			[(ngModel)]="node.isChecked" value='node_{{ node.id }}' 
-			(ngModelChange)="toggleCheckbox($event, node)">
-			<span class='name'>{{ node.name }}</span>
-		</a>
+	<li #nodeList class="node" id='{{ node.id }}'>
+		<div [hidden]="!node.isVisible">
+			<a *ngIf='node.id'>
+				<input #checkboxes name='checkboxes[]' class="form-control" type='checkbox' 
+				[(ngModel)]="node.isChecked" value='node_{{ node.id }}' 
+				(ngModelChange)="toggleCheckbox($event, node)">
+				<span class='name'>{{ node.name }}</span>
+			</a>
 
-        <a class='linkToggle' *ngIf='node.id && node?.children' (click)="toggle($event, node)">   
-            [toggle children]         
-		</a>    
+			<a class='linkToggle' *ngIf='node.id && node?.children' (click)="toggle($event, node)">   
+				[toggle children]         
+			</a>    
+		</div>
 
 		<div *ngIf="node?.children" [hidden]="node.isClosed">
 			<ul id="childrenof_{{ node.id }}" [ngClass]="">	

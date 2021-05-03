@@ -3,13 +3,13 @@ ul {
     flex-direction: column;
 }
 
-.hide {
-    display: none;
-}
-
 li {
     list-style-type: none;
     font-size: 12x;    
+}
+
+.hide {
+    display: none;
 }
 
 .selectedFacet {
@@ -21,4 +21,14 @@ a.linkToggle {
     cursor: pointer;
     font-size: 10px;
     text-decoration: underline;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+}
+
+.button-container > input {
+    margin-right: 10px;
 }

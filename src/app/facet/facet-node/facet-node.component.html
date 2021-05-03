@@ -1,8 +1,0 @@
-<ul *ngIf='nodes' [ngClass]="show ? 'show' : ''">
-<!--ul *ngIf='nodes' class="show"-->
-    <li *ngFor='let node of nodes'>
-        <input [(ngModel)]="isChecked" type='checkbox' id='node_{{ node.id }}' (change)="selectFacet($event, node)"> <span>{{ node.name }}</span> {{ parentChecked }}
-        <a class='toggleCaption' href='javascript:;' *ngIf='node.children' (click)="toggleChildren($event, node)"> [toggle children] </a>
-        <app-facet-node *ngIf='node.children' [nodes]='node.children' [show]=show></app-facet-node>
-    </li>
-</ul>
