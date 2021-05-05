@@ -5,6 +5,7 @@ import { FacetComponent } from './facet.component';
 describe('FacetComponent', () => {
   let component: FacetComponent;
   let fixture: ComponentFixture<FacetComponent>;
+  let el: HTMLElement;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -21,5 +22,11 @@ describe('FacetComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should display original title after detectChanges()', () => {
+    el = fixture.nativeElement.querySelector('h2');
+    fixture.detectChanges();
+    expect(el.textContent).toContain(component.options.title);
   });
 });

@@ -1,9 +1,9 @@
 <h2 *ngIf="options.title">{{ options.title }}</h2>
 <p>Selected Facet(s) <span *ngIf="selectedFacetNames?.length > 0">[{{ selectedFacetNames?.length }}]</span>: <span class='selectedFacet'>{{ selectedFacetNames.toString() }}</span></p>
 <div class='button-container'>
-	<input type='button' value='{{ options.btnResetText }}' (click)="refreshList()" />
+	<input type='button' value='{{ options.btnResetText }}' title='Fetch from server to reset the tree'  (click)="refreshList()" />
 	<input *ngIf='selectedFacetNames.length' type='button' title='soft delete only' value='{{ options.btnDeleteText }}' (click)="removeFacets()" />
-	<input *ngIf='selectedFacetNames.length' type='button' value='{{ options.btnClearText }}' (click)="uncheckAll()" />
+	<input *ngIf='selectedFacetNames.length' type='button' title='clear/reset all checkbox selections' value='{{ options.btnClearText }}' (click)="uncheckAll()" />
 </div>
 <div class="form-group">
 	<label for="search-text">{{ options.searchLabel }}</label>
@@ -15,10 +15,10 @@
 	<li #nodeList class="node" id='{{ node.id }}'>
 		<div [hidden]="!node.isVisible">
 			<a *ngIf='node.id'>
-				<input #checkboxes name='checkboxes[]' class="form-control" type='checkbox' 
+				<input #checkboxes id='checkbox_{{ node.id }}' name='checkboxes[]' class="form-control" type='checkbox' 
 				[(ngModel)]="node.isChecked" value='node_{{ node.id }}' 
 				(ngModelChange)="toggleCheckbox($event, node)">
-				<span class='name'>{{ node.name }}</span>
+				<label for='checkbox_{{ node.id }}' class='name'>{{ node.name }}</label>
 			</a>
 
 			<a class='linkToggle' *ngIf='node.id && node?.children' (click)="toggle($event, node)">   

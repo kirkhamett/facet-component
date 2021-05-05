@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { FacetObserverService } from './facet-observer.service';
 
-describe('FacetObserversService', () => {
+fdescribe('FacetObserversService', () => {
   let service: FacetObserverService;
 
   beforeEach(() => {
